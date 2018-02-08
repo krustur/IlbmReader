@@ -13,9 +13,14 @@ namespace IlbmReaderTest
             }
             var pos = 0;
             var targetPos = 0;
-            var targetSize = ((ilbm.Bmhd.PageWidth + 15) & 0xfffffff0) / 8 * ilbm.Bmhd.PageHeight * ilbm.Bmhd.NumberOfPlanes;
-            InterleavedBitmaps = new byte[targetSize];
+            var writtenBytes = 0;
+            ActualNumberOfPlanes = ilbm.Bmhd.NumberOfPlanes;
+            BytesPerRowPerPlane = ((ilbm.Bmhd.Width + 15) & 0xfffffff0) / 8;
+            BytesPerRowAllPlanes = BytesPerRowPerPlane * ActualNumberOfPlanes;
+            var targetSize = BytesPerRowAllPlanes * ilbm.Bmhd.Height;
+            InterleavedBitmapData = new byte[targetSize];
             while (pos < innerIlbmChunk.ContentLength)
+                //while (targetPos < targetSize)
             {
                 var n = ContentReader.ReadSByte(innerIlbmChunk.Content, pos);
                 pos++;
@@ -24,21 +29,25 @@ namespace IlbmReaderTest
                 {
                     throw new Exception("No operation?!?");
                 }
-                else if (n < 0)
+                else
+                if (n < 0)
                 {
                     var newn = -n;
                     for (int i = 0; i <= newn; i++)
                     {
-                        InterleavedBitmaps[targetPos++] = innerIlbmChunk.Content[pos];
+                        InterleavedBitmapData[targetPos++] = innerIlbmChunk.Content[pos];
                     }
+                    writtenBytes += newn + 1;
                     pos++;
                 }
                 else
                 {
                     for (int i = 0; i <= n; i++)
                     {
-                        InterleavedBitmaps[targetPos++] = innerIlbmChunk.Content[pos++];
+                        InterleavedBitmapData[targetPos++] = innerIlbmChunk.Content[pos++];
                     }
+                    writtenBytes += n + 1;
+
                 }
             }
             //Width = ContentReader.ReadUShort(innerIlbmChunk.Content, 0);
@@ -56,6 +65,9 @@ namespace IlbmReaderTest
             //PageHeight = ContentReader.ReadShort(innerIlbmChunk.Content, 18);
         }
 
-        public byte[] InterleavedBitmaps { get; }
+        public byte[] InterleavedBitmapData { get; }
+        public byte ActualNumberOfPlanes { get; }
+        public long BytesPerRowPerPlane { get; }
+        public long BytesPerRowAllPlanes { get; }
     }
 }
