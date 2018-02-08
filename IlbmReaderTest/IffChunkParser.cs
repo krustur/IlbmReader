@@ -21,7 +21,7 @@ namespace IlbmReaderTest
         internal IffChunk GetNextChunk()
         {
             var innerChunk = new IffChunk(_chunk.Content, _pos);
-            _pos += 8 + innerChunk.ContentLength;
+            _pos += 8 + ((innerChunk.ContentLength + 1) & 0x7ffffffe);
             return innerChunk;
 
         }

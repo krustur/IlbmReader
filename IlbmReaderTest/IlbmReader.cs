@@ -43,43 +43,46 @@ namespace IlbmReaderTest
             //}
 
             //Get
-            var width = ilbm.Bmhd.Width;
-            var height = ilbm.Bmhd.Height;
-            var numberOfPlanes = ilbm.Bmhd.NumberOfPlanes;
-
-            var bytesPerRowPerPlane = ilbm.Body.BytesPerRowPerPlane;
-            var bytesPerRowAllPlanes = ilbm.Body.BytesPerRowAllPlanes;
-
-            var bitmap = new Bitmap(width, height);
-
-            for (var pixelX = 0; pixelX < width; pixelX++)
+            if (ilbm.Bmhd != null && ilbm.Body != null)
             {
-                var xoffset = pixelX / 8;
-                var xbit = (~pixelX) & 0x00000007;
-                var bitMask = 0x01 << xbit;
+                var width = ilbm.Bmhd.Width;
+                var height = ilbm.Bmhd.Height;
+                var numberOfPlanes = ilbm.Bmhd.NumberOfPlanes;
 
-                for (var pixelY = 0; pixelY < height; pixelY++)
+                var bytesPerRowPerPlane = ilbm.Body.BytesPerRowPerPlane;
+                var bytesPerRowAllPlanes = ilbm.Body.BytesPerRowAllPlanes;
+
+                var bitmap = new Bitmap(width, height);
+
+                for (var pixelX = 0; pixelX < width; pixelX++)
                 {
-                    var yoffset = pixelY * bytesPerRowAllPlanes;
-                    int clutIndex = 0;
-                    for (int plane = 0; plane < numberOfPlanes; plane++)
+                    var xoffset = pixelX / 8;
+                    var xbit = (~pixelX) & 0x00000007;
+                    var bitMask = 0x01 << xbit;
+
+                    for (var pixelY = 0; pixelY < height; pixelY++)
                     {
-                        var planeByte = ilbm.Body.InterleavedBitmapData[yoffset + xoffset + plane * bytesPerRowPerPlane];
-                        var planeValue = ((planeByte & bitMask) >> xbit) << plane;
-                        clutIndex = clutIndex + planeValue;
+                        var yoffset = pixelY * bytesPerRowAllPlanes;
+                        int clutIndex = 0;
+                        for (int plane = 0; plane < numberOfPlanes; plane++)
+                        {
+                            var planeByte = ilbm.Body.InterleavedBitmapData[yoffset + xoffset + plane * bytesPerRowPerPlane];
+                            var planeValue = ((planeByte & bitMask) >> xbit) << plane;
+                            clutIndex = clutIndex + planeValue;
 
+                        }
+                        //var pixelCol = Color.FromArgb(pixelX & 0xff, pixelY & 0xff, 0);
+                        //var clutIndex = ilbm.Body.InterleavedBitmaps[]
+
+                        //clutIndex = pixelY & 0xff;
+
+                        var pixelCol = ilbm.Cmap.Colors[clutIndex];
+                        bitmap.SetPixel(pixelX, pixelY, pixelCol);
                     }
-                    //var pixelCol = Color.FromArgb(pixelX & 0xff, pixelY & 0xff, 0);
-                    //var clutIndex = ilbm.Body.InterleavedBitmaps[]
-                    
-                    //clutIndex = pixelY & 0xff;
-
-                    var pixelCol = ilbm.Cmap.Colors[clutIndex];
-                    bitmap.SetPixel(pixelX, pixelY, pixelCol);
                 }
+                ilbm.Bitmap = bitmap;
             }
 
-            ilbm.Bitmap = bitmap;
 
             return ilbm;
         }
@@ -101,6 +104,26 @@ namespace IlbmReaderTest
                     break;
                 case "BODY":
                     ilbm.Body = new Body(innerIlbmChunk, ilbm);
+                    break;
+                case "DPPS":
+                    //todo: Handle DPPS
+                    break;
+                case "FORM":
+                    //todo: Handle inner FORMs
+                    break;
+                case "DRNG":
+                    //todo: Handle DRNG
+                    break;
+                case "BRNG":
+                    //todo: Handle BRNG
+                    break;
+                case "CRNG":
+                    break;
+                case "DPI ":
+                    break;
+                case "GRAB":
+                    break;
+                case "DPXT":
                     break;
                 default:
                     throw new Exception($"Unknown inner Ilbm chunk type id [{innerIlbmChunk.TypeId}]");

@@ -15,6 +15,10 @@ namespace IlbmReaderTest
             var targetPos = 0;
             var writtenBytes = 0;
             ActualNumberOfPlanes = ilbm.Bmhd.NumberOfPlanes;
+            if (ilbm.Bmhd.Masking == 1)
+            {
+                ActualNumberOfPlanes++;
+            }
             BytesPerRowPerPlane = ((ilbm.Bmhd.Width + 15) & 0xfffffff0) / 8;
             BytesPerRowAllPlanes = BytesPerRowPerPlane * ActualNumberOfPlanes;
             var targetSize = BytesPerRowAllPlanes * ilbm.Bmhd.Height;
