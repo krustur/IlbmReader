@@ -74,11 +74,12 @@ namespace IlbmReaderTest
                     ilbm.Bmhd = new Bmhd(innerIlbmChunk);
                     break;
                 case "CMAP":
-                    ilbm.Cmap = new Cmap(innerIlbmChunk);
+                    ilbm.Cmap = new Cmap(innerIlbmChunk, ilbm);
                     break;
                 case "CAMG":
                     break;
                 case "BODY":
+                    ilbm.Body = new Body(innerIlbmChunk, ilbm);
                     break;
                 default:
                     throw new Exception($"Unknown inner Ilbm chunk type id [{innerIlbmChunk.TypeId}]");

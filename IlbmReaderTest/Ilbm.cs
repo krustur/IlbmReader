@@ -8,5 +8,6 @@ namespace IlbmReaderTest
         public string Anno { get; internal set; }
         public Bmhd Bmhd { get; internal set; }
         public Cmap Cmap { get; internal set; }
+        public Body Body { get; internal set; }
     }
 }

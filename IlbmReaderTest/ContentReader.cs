@@ -10,6 +10,12 @@ namespace IlbmReaderTest
             return Encoding.UTF8.GetString(content, offset, length);
         }
 
+        internal static sbyte ReadSByte(byte[] content, int offset)
+        {
+            var result = (sbyte)content[offset + 0];
+            return result;
+        }
+
         internal static byte ReadUByte(byte[] content, int offset)
         {
             var result = content[offset + 0];

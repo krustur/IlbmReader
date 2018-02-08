@@ -1,12 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace IlbmReaderTest
 {
     internal class Cmap
     {
-        public Cmap(IffChunk innerIlbmChunk)
+        public Cmap(IffChunk innerIlbmChunk, Ilbm ilbm)
         {
+            if (ilbm.Bmhd == null)
+            {
+                throw new Exception("BMHD chunk not loaded error");
+            }
+
             Colors = new List<Color>();
             for (int i = 0; i < innerIlbmChunk.ContentLength / 3; i++)
             {
