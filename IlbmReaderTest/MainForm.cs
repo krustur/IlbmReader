@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -6,16 +7,25 @@ namespace IlbmReaderTest
 {
     public partial class MainForm : Form
     {
+        private readonly IlbmForm.Factory _ilbmFormFactory;
+
+        public delegate MainForm Factory();
+
         public MdiClientPanel MdiClientPanel { get; private set; }
 
-        public MainForm()
+        public MainForm(IlbmForm.Factory ilbmFormFactory)
         {
+            _ilbmFormFactory = ilbmFormFactory;
+
             InitializeComponent();
             //AllowDrop = true;
             //DragEnter += new DragEventHandler(Form1_DragEnter);
             //DragDrop += new DragEventHandler(Form1_DragDrop);
             //LoadIlbm(@"D:\github\IlbmReader\Ilbm files\Erland\On_the_edge.lbm");
             //LoadIlbm(@"D:\github\IlbmReader\Ilbm files\Erland\Temp\Flare.iff");
+
+            
+           
 
             MdiClientPanel = new MdiClientPanel
             {
@@ -24,6 +34,7 @@ namespace IlbmReaderTest
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top
             };
             this.splitContainer1.Panel2.Controls.Add(MdiClientPanel);
+
         }
 
         void MainForm_DragEnter(object sender, DragEventArgs e)
@@ -64,40 +75,13 @@ namespace IlbmReaderTest
 
         private void LoadIlbm(string fileName)
         {
-            var form = new IlbmForm()
-            {
-                IlbmFileName = fileName,
-                //Parent = this,
-                MdiParent = this.MdiClientPanel.MdiForm,
-                ShowInTaskbar = false,
-            };
+            var form = _ilbmFormFactory();
+
+            form.IlbmFileName = fileName;
+            form.MdiParent = this.MdiClientPanel.MdiForm;
+            form.ShowInTaskbar = false;
+            
             form.Show();
         }       
-    }
-
-    public class MdiClientPanel : Panel
-    {
-        private Form mdiForm;
-        private MdiClient ctlClient = new MdiClient();
-
-        public MdiClientPanel()
-        {
-            base.Controls.Add(this.ctlClient);
-        }
-
-        public Form MdiForm
-        {
-            get
-            {
-                if (this.mdiForm == null)
-                {
-                    this.mdiForm = new Form();
-                    /// set the hidden ctlClient field which is used to determine if the form is an MDI form
-                    System.Reflection.FieldInfo field = typeof(Form).GetField("ctlClient", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    field.SetValue(this.mdiForm, this.ctlClient);
-                }
-                return this.mdiForm;
-            }
-        }
     }
 }

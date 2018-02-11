@@ -1,36 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Autofac;
 
 namespace IlbmReaderTest
 {
     public partial class IlbmForm : Form
     {
+        private readonly IlbmReader.Factory ilbmReaderFactory;
+
+        public delegate IlbmForm Factory();
+
         public string IlbmFileName { get; set; }
 
-        public IlbmForm()
+        public IlbmForm(IlbmReader.Factory ilbmReaderFactory)
         {
             InitializeComponent();
-
-            
+            this.ilbmReaderFactory = ilbmReaderFactory;
         }
 
         private void IlbmForm_Load(object sender, EventArgs e)
         {
-            var depacker = new IlbmReader(IlbmFileName);
+            var ilbmReader = ilbmReaderFactory();
 
-            var ilbm = depacker.Read();
-            pictureBox1.Image = ilbm.Bitmap;
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            Width = pictureBox1.Width = ilbm.Bmhd.Width * 2;
-            Height = pictureBox1.Height = ilbm.Bmhd.Height * 2;
-            
+            var ilbm = ilbmReader.Read(IlbmFileName);
+            if (ilbm.Bmhd != null)
+            {
+                pictureBox1.Image = ilbm.Bitmap;
+                pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+                Width = pictureBox1.Width = ilbm.Bmhd.Width;
+                Height = pictureBox1.Height = ilbm.Bmhd.Height;
+            }
         }
     }
 }

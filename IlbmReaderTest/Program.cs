@@ -1,6 +1,11 @@
-﻿using System;
+﻿using Autofac;
+using Microsoft.Win32.SafeHandles;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,9 +19,16 @@ namespace IlbmReaderTest
         [STAThread]
         static void Main()
         {
+            var logger = LogConfiguration.Create();
+            logger.Information("Hello\n");
+            var container = IocConfiguration.Configure(logger);
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+
+            var mainFormFactory = container.Resolve<MainForm.Factory>();
+            var form = mainFormFactory.Invoke();
+            Application.Run(form);
         }
     }
 }

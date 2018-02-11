@@ -1,26 +1,32 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
 namespace IlbmReaderTest
 {
-    internal class IlbmReader
+    public class IlbmReader
     {
-        private readonly string _fileName;
+        public delegate IlbmReader Factory();
 
-        public IlbmReader(string fileName)
+        private readonly ILogger _logger;
+
+        public IlbmReader(ILogger logger)
         {
-            _fileName = fileName;
+            _logger = logger;
         }
 
-        internal Ilbm Read()
+        internal Ilbm Read(string fileName)
         {
+            _logger.Information($"Loading IFF ILBM file {fileName}");
+
             var iffFile = new IffFileReader();
-            var topLevelchunk = iffFile.ReadAsTopLevelChunk(_fileName);
+            var topLevelchunk = iffFile.ReadAsTopLevelChunk(fileName);
             if (topLevelchunk.TypeId != "FORM")
             {
-                throw new System.Exception($"Unknown top level chunk type id [{topLevelchunk.TypeId}]");
+                _logger.Error($"Unknown top level chunk type id [{topLevelchunk.TypeId}]");
+                return null;
             }
 
             var ilbm = new Ilbm();
