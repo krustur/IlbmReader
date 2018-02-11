@@ -9,7 +9,6 @@ namespace IlbmReaderTest
         public static ILogger Create()
         {
             var logger = new LoggerConfiguration()
-                .WriteTo.ColoredConsole()
                 .WriteTo.RollingFile("log-{Date}.txt", fileSizeLimitBytes: null, retainedFileCountLimit: null)
                 .CreateLogger();
 
