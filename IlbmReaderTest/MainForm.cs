@@ -6,6 +6,8 @@ namespace IlbmReaderTest
 {
     public partial class MainForm : Form
     {
+        public MdiClientPanel MdiClientPanel { get; private set; }
+
         public MainForm()
         {
             InitializeComponent();
@@ -14,6 +16,14 @@ namespace IlbmReaderTest
             //DragDrop += new DragEventHandler(Form1_DragDrop);
             //LoadIlbm(@"D:\github\IlbmReader\Ilbm files\Erland\On_the_edge.lbm");
             //LoadIlbm(@"D:\github\IlbmReader\Ilbm files\Erland\Temp\Flare.iff");
+
+            MdiClientPanel = new MdiClientPanel
+            {
+                Width = splitContainer1.Panel2.Width,
+                Height = splitContainer1.Panel2.Height,
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top
+            };
+            this.splitContainer1.Panel2.Controls.Add(MdiClientPanel);
         }
 
         void MainForm_DragEnter(object sender, DragEventArgs e)
@@ -58,10 +68,36 @@ namespace IlbmReaderTest
             {
                 IlbmFileName = fileName,
                 //Parent = this,
-                MdiParent = this,
+                MdiParent = this.MdiClientPanel.MdiForm,
                 ShowInTaskbar = false,
             };
             form.Show();
         }       
+    }
+
+    public class MdiClientPanel : Panel
+    {
+        private Form mdiForm;
+        private MdiClient ctlClient = new MdiClient();
+
+        public MdiClientPanel()
+        {
+            base.Controls.Add(this.ctlClient);
+        }
+
+        public Form MdiForm
+        {
+            get
+            {
+                if (this.mdiForm == null)
+                {
+                    this.mdiForm = new Form();
+                    /// set the hidden ctlClient field which is used to determine if the form is an MDI form
+                    System.Reflection.FieldInfo field = typeof(Form).GetField("ctlClient", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    field.SetValue(this.mdiForm, this.ctlClient);
+                }
+                return this.mdiForm;
+            }
+        }
     }
 }

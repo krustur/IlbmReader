@@ -112,20 +112,30 @@ namespace IlbmReaderTest
                     //todo: Handle inner FORMs
                     break;
                 case "DRNG":
-                    //todo: Handle DRNG
+                    //DPaint IV enhanced color cycle chunk (EA)
+                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
                     break;
                 case "BRNG":
-                    //todo: Handle BRNG
+                    //unknown
                     break;
                 case "CRNG":
+                    // color register range
+                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
                     break;
                 case "DPI ":
+                    // Dots per inch chunk
+                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
                     break;
                 case "GRAB":
+                    // locates a “handle” or “hotspot”
+                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
                     break;
                 case "DPXT":
+                    // unknown
                     break;
                 case "TINY":
+                    // Thumbnail
+                    // https://en.m.wikipedia.org/wiki/ILBM
                     break;
                 default:
                     throw new Exception($"Unknown inner Ilbm chunk type id [{innerIlbmChunk.TypeId}]");
