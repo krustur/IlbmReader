@@ -1,6 +1,6 @@
 ﻿namespace IlbmReaderTest
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -42,18 +42,18 @@
             this.buttonLoadIff.UseVisualStyleBackColor = true;
             this.buttonLoadIff.Click += new System.EventHandler(this.buttonLoadIlbm_Click);
             // 
-            // Form1
+            // MainForm
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(695, 461);
             this.Controls.Add(this.buttonLoadIff);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
-            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
+            this.IsMdiContainer = true;
+            this.Name = "MainForm";
+            this.Text = "MainForm";
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
             this.ResumeLayout(false);
 
         }

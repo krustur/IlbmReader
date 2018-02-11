@@ -4,12 +4,9 @@ using System.Windows.Forms;
 
 namespace IlbmReaderTest
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        private int _drawX = 0;
-        private int _drawY = 0;
-
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             //AllowDrop = true;
@@ -19,21 +16,20 @@ namespace IlbmReaderTest
             //LoadIlbm(@"D:\github\IlbmReader\Ilbm files\Erland\Temp\Flare.iff");
         }
 
-        void Form1_DragEnter(object sender, DragEventArgs e)
+        void MainForm_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
         }
 
-        void Form1_DragDrop(object sender, DragEventArgs e)
+        void MainForm_DragDrop(object sender, DragEventArgs e)
         {
             var clientPoint = PointToClient(new Point(e.X, e.Y));
 
 
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (files.Length > 0)
+            foreach (string file in files)
             {
-                LoadIlbm(files[0], clientPoint.X, clientPoint.Y);
-            //foreach (string file in files) Console.WriteLine(file);
+                LoadIlbm(file);
             }
         }
 
@@ -50,30 +46,22 @@ namespace IlbmReaderTest
             if (dialogResult == DialogResult.OK)
             {
                 var fileName = openFileDialog.FileName;
-                LoadIlbm(fileName, _drawX, _drawY);
+                LoadIlbm(fileName);
 
             }
                     
         }
 
-        private void LoadIlbm(string fileName, int x, int y)
+        private void LoadIlbm(string fileName)
         {
-
-            var depacker = new IlbmReader(fileName);
-
-            var ilbm = depacker.Read();
-
-            if (ilbm.Bitmap != null)
+            var form = new IlbmForm()
             {
-                var gfx = CreateGraphics();
-                gfx.DrawImageUnscaled(ilbm.Bitmap, x, y);
-            }
-        }
-       
-        private void Form1_MouseUp(object sender, MouseEventArgs e)
-        {
-            _drawX = e.X;
-            _drawY = e.Y;
-        }
+                IlbmFileName = fileName,
+                //Parent = this,
+                MdiParent = this,
+                ShowInTaskbar = false,
+            };
+            form.Show();
+        }       
     }
 }

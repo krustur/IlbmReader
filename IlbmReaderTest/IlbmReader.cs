@@ -125,6 +125,8 @@ namespace IlbmReaderTest
                     break;
                 case "DPXT":
                     break;
+                case "TINY":
+                    break;
                 default:
                     throw new Exception($"Unknown inner Ilbm chunk type id [{innerIlbmChunk.TypeId}]");
             }
