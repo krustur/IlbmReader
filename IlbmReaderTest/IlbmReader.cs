@@ -107,44 +107,58 @@ namespace IlbmReaderTest
                     ilbm.Cmap = new Cmap(innerIlbmChunk, ilbm);
                     break;
                 case "CAMG":
+                    // https://en.wikipedia.org/wiki/ILBM#CAMG:_Amiga_mode
+                    // Commodore Amiga viewport mode
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 case "BODY":
                     ilbm.Body = new Body(innerIlbmChunk, ilbm);
                     break;
                 case "DPPS":
                     //todo: Handle DPPS
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 case "FORM":
                     //todo: Handle inner FORMs
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 case "DRNG":
                     //DPaint IV enhanced color cycle chunk (EA)
                     // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 case "BRNG":
                     //unknown
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 case "CRNG":
                     // color register range
                     // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 case "DPI ":
                     // Dots per inch chunk
                     // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 case "GRAB":
                     // locates a “handle” or “hotspot”
                     // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 case "DPXT":
                     // unknown
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 case "TINY":
                     // Thumbnail
                     // https://en.m.wikipedia.org/wiki/ILBM
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
                 default:
-                    throw new Exception($"Unknown inner Ilbm chunk type id [{innerIlbmChunk.TypeId}]");
+                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
+                    break;
+                    //throw new Exception($"Unknown inner Ilbm chunk type id [{innerIlbmChunk.TypeId}]");
             }
 
         }
