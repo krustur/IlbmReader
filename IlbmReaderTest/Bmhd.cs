@@ -1,6 +1,6 @@
 ﻿namespace IlbmReaderTest
 {
-    internal class Bmhd
+    public class Bmhd
     {
         public Bmhd(IffChunk innerIlbmChunk)
         {
@@ -32,5 +32,4 @@
         public short PageWidth { get; }
         public short PageHeight { get; }
     }
-
 }

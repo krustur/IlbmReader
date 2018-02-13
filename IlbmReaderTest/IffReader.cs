@@ -184,6 +184,12 @@ namespace IlbmReaderTest
                     // https://en.m.wikipedia.org/wiki/ILBM
                     _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
+                case "ANHD":                    
+                    ilbm.Anhd = new Anhd(innerIlbmChunk);
+                    break;
+                case "DLTA":
+                    // Anim delta
+                    break;
                 default:
                     _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;

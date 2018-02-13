@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Anhd.cs" />
     <Compile Include="Bmhd.cs" />
     <Compile Include="Body.cs" />
     <Compile Include="Camg.cs" />

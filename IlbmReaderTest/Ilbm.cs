@@ -10,5 +10,6 @@ namespace IlbmReaderTest
         public Cmap Cmap { get; internal set; }
         public Body Body { get; internal set; }
         public Camg Camg { get; internal set; }
+        public Anhd Anhd { get; internal set; }
     }
 }
