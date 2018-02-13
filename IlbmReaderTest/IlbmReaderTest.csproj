@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="Bmhd.cs" />
     <Compile Include="Body.cs" />
+    <Compile Include="Camg.cs" />
     <Compile Include="Cmap.cs" />
     <Compile Include="ContentReader.cs" />
     <Compile Include="IffChunk.cs" />

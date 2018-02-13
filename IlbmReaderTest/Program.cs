@@ -20,7 +20,6 @@ namespace IlbmReaderTest
         static void Main()
         {
             var logger = LogConfiguration.Create();
-            logger.Information("Hello\n");
             var container = IocConfiguration.Configure(logger);
 
             Application.EnableVisualStyles();

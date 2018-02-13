@@ -88,10 +88,10 @@ namespace IlbmReaderTest
             {
                 case "ILBM":
                     var ilbm = new Ilbm();
-                    var chunkIterator = new IffChunkIterator(formChunk.Content, 4);
-                    while (chunkIterator.EndOfChunk() == false)
+                    var ilbmIterator = new IffChunkIterator(formChunk.Content, 4);
+                    while (ilbmIterator.EndOfChunk() == false)
                     {
-                        var innerIlbmChunk = chunkIterator.GetNextChunk();
+                        var innerIlbmChunk = ilbmIterator.GetNextChunk();
                         iffFile.AllChunks.Add(innerIlbmChunk);
 
                         HandleInnerIlbmChunk(innerIlbmChunk, ilbm);
@@ -101,6 +101,14 @@ namespace IlbmReaderTest
                     break;
                 case "ANIM":
                     iffFile.IsAnim = true;
+                    var animIterator = new IffChunkIterator(formChunk.Content, 4);
+                    while (animIterator.EndOfChunk() == false)
+                    {
+                        var innerIlbmChunk = animIterator.GetNextChunk();
+                        iffFile.AllChunks.Add(innerIlbmChunk);
+
+                        HandleFormChunk(innerIlbmChunk, iffFile);
+                    }
                     break;
                 default:
                     _logger.Information($"Unsupported FORM type [{formType}]");
@@ -130,9 +138,7 @@ namespace IlbmReaderTest
                     ilbm.Cmap = new Cmap(innerIlbmChunk, ilbm);
                     break;
                 case "CAMG":
-                    // https://en.wikipedia.org/wiki/ILBM#CAMG:_Amiga_mode
-                    // Commodore Amiga viewport mode
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
+                    ilbm.Camg = new Camg(innerIlbmChunk);
                     break;
                 case "BODY":
                     ilbm.Body = new Body(innerIlbmChunk, ilbm);

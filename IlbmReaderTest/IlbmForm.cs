@@ -24,7 +24,19 @@ namespace IlbmReaderTest
             var iffReader = iffReaderFactory();
 
             var iff = iffReader.Read(IffFileName);
-            var ilbm = iff.Ilbms.FirstOrDefault();
+
+            Ilbm ilbm;
+            if (iff.Ilbms.Count > 1)
+            {
+                var x = (new Random().Next() % iff.Ilbms.Count);
+                ilbm = iff.Ilbms[x];
+            }
+            else
+            {
+                ilbm = iff.Ilbms.FirstOrDefault();
+                
+            }
+
             if (ilbm != null && ilbm.Bmhd != null)
             {
                 pictureBox1.Image = ilbm.Bitmap;
