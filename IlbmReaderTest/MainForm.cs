@@ -77,7 +77,7 @@ namespace IlbmReaderTest
         {
             var form = _ilbmFormFactory();
 
-            form.IlbmFileName = fileName;
+            form.IffFileName = fileName;
             form.MdiParent = this.MdiClientPanel.MdiForm;
             form.ShowInTaskbar = false;
             

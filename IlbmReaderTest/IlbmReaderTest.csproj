@@ -75,7 +75,8 @@
     <Compile Include="ContentReader.cs" />
     <Compile Include="IffChunk.cs" />
     <Compile Include="IffChunkParser.cs" />
-    <Compile Include="IffFileReader.cs" />
+    <Compile Include="IffFile.cs" />
+    <Compile Include="IffReader.cs" />
     <Compile Include="Ilbm.cs" />
     <Compile Include="IlbmForm.cs">
       <SubType>Form</SubType>
@@ -83,7 +84,6 @@
     <Compile Include="IlbmForm.Designer.cs">
       <DependentUpon>IlbmForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="IlbmReader.cs" />
     <Compile Include="IocConfiguration.cs" />
     <Compile Include="LogConfiguration.cs" />
     <Compile Include="MainForm.cs">

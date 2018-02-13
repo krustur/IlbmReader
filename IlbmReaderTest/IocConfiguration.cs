@@ -10,7 +10,7 @@ namespace IlbmReaderTest
         {
             var builder = new ContainerBuilder();
             builder.RegisterType<MainForm>();
-            builder.RegisterType<IlbmReader>();
+            builder.RegisterType<IffReader>();
             builder.RegisterType<IlbmForm>();
             builder.RegisterLogger(logger);
             var container = builder.Build();

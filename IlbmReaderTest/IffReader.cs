@@ -2,54 +2,40 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace IlbmReaderTest
 {
-    public class IlbmReader
+    public class IffReader
     {
-        public delegate IlbmReader Factory();
+        public delegate IffReader Factory();
 
         private readonly ILogger _logger;
 
-        public IlbmReader(ILogger logger)
+        public IffReader(ILogger logger)
         {
             _logger = logger;
         }
 
-        internal Ilbm Read(string fileName)
+        internal IffFile Read(string fileName)
         {
             _logger.Information($"Loading IFF ILBM file {fileName}");
+            
+            var fileContent = File.ReadAllBytes(fileName);
+            var topLevelIterator = new IffChunkIterator(fileContent);
+            var iffFile = new IffFile();
 
-            var iffFile = new IffFileReader();
-            var topLevelchunk = iffFile.ReadAsTopLevelChunk(fileName);
-            if (topLevelchunk.TypeId != "FORM")
+            while (topLevelIterator.EndOfChunk() == false)
             {
-                _logger.Error($"Unknown top level chunk type id [{topLevelchunk.TypeId}]");
-                return null;
+                var topLevelChunk2 = topLevelIterator.GetNextChunk();
+                HandleFormChunk(topLevelChunk2, iffFile); // Assume top level chunks are form's for now
             }
 
-            var ilbm = new Ilbm();
 
-            var ilbmChunk = new IffChunk(topLevelchunk.Content, 0, topLevelchunk.ContentLength-4);
-
-            var iffChunkParser = new IffChunkParser(ilbmChunk);
-            var innerIlbmChunks = new List<IffChunk>();
-            while (iffChunkParser.EndOfChunk() == false)
-            {
-                var innerIlbmChunk = iffChunkParser.GetNextChunk();
-                innerIlbmChunks.Add(innerIlbmChunk);
-
-                HandleInnerIlbmChunk(innerIlbmChunk, ilbm);
-            }
-
-            //if (iffFile.EndOfFile() != true)
-            //{
-            //    throw new System.Exception("IFF file not empty after top level group chunk!");
-            //}
-
-            //Get
-            if (ilbm.Bmhd != null && ilbm.Body != null)
+            var ilbm = iffFile.Ilbms.FirstOrDefault();
+            if (ilbm != null && ilbm.Bmhd != null && ilbm.Body != null)
             {
                 var width = ilbm.Bmhd.Width;
                 var height = ilbm.Bmhd.Height;
@@ -77,11 +63,6 @@ namespace IlbmReaderTest
                             clutIndex = clutIndex + planeValue;
 
                         }
-                        //var pixelCol = Color.FromArgb(pixelX & 0xff, pixelY & 0xff, 0);
-                        //var clutIndex = ilbm.Body.InterleavedBitmaps[]
-
-                        //clutIndex = pixelY & 0xff;
-
                         var pixelCol = ilbm.Cmap.Colors[clutIndex];
                         bitmap.SetPixel(pixelX, pixelY, pixelCol);
                     }
@@ -90,8 +71,50 @@ namespace IlbmReaderTest
             }
 
 
-            return ilbm;
+            return iffFile;
         }
+
+        private void HandleFormChunk(IffChunk formChunk, IffFile iffFile)
+        {
+            if (formChunk.TypeId != "FORM")
+            {
+                _logger.Error($"Not a FORM type [{formChunk.TypeId}]");
+                return;
+            }
+
+            var formType = ContentReader.ReadString(formChunk.Content, 0, 4);
+
+            switch (formType)
+            {
+                case "ILBM":
+                    var ilbm = new Ilbm();
+                    var chunkIterator = new IffChunkIterator(formChunk.Content, 4);
+                    while (chunkIterator.EndOfChunk() == false)
+                    {
+                        var innerIlbmChunk = chunkIterator.GetNextChunk();
+                        iffFile.AllChunks.Add(innerIlbmChunk);
+
+                        HandleInnerIlbmChunk(innerIlbmChunk, ilbm);
+                    }
+
+                    iffFile.Ilbms.Add(ilbm);
+                    break;
+                case "ANIM":
+                    iffFile.IsAnim = true;
+                    break;
+                default:
+                    _logger.Information($"Unsupported FORM type [{formType}]");
+                    break;
+            }
+        }
+
+        public IffChunk ReadTopLevelChunk(string fileName)
+        {
+            var fileContent = File.ReadAllBytes(fileName);
+            var iffChunk = new IffChunk(fileContent, 0);
+            return iffChunk;
+        }
+
 
         private void HandleInnerIlbmChunk(IffChunk innerIlbmChunk, Ilbm ilbm)
         {

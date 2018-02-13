@@ -1,29 +1,31 @@
 ﻿using System;
 using System.Windows.Forms;
 using Autofac;
+using System.Linq;
 
 namespace IlbmReaderTest
 {
     public partial class IlbmForm : Form
     {
-        private readonly IlbmReader.Factory ilbmReaderFactory;
+        private readonly IffReader.Factory iffReaderFactory;
 
         public delegate IlbmForm Factory();
 
-        public string IlbmFileName { get; set; }
+        public string IffFileName { get; set; }
 
-        public IlbmForm(IlbmReader.Factory ilbmReaderFactory)
+        public IlbmForm(IffReader.Factory ilbmReaderFactory)
         {
             InitializeComponent();
-            this.ilbmReaderFactory = ilbmReaderFactory;
+            this.iffReaderFactory = ilbmReaderFactory;
         }
 
         private void IlbmForm_Load(object sender, EventArgs e)
         {
-            var ilbmReader = ilbmReaderFactory();
+            var iffReader = iffReaderFactory();
 
-            var ilbm = ilbmReader.Read(IlbmFileName);
-            if (ilbm.Bmhd != null)
+            var iff = iffReader.Read(IffFileName);
+            var ilbm = iff.Ilbms.FirstOrDefault();
+            if (ilbm != null && ilbm.Bmhd != null)
             {
                 pictureBox1.Image = ilbm.Bitmap;
                 pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
