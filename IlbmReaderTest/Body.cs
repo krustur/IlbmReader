@@ -4,7 +4,6 @@ namespace IlbmReaderTest
 {
     internal class Body
     {
-
         public Body(IffChunk innerIlbmChunk, Ilbm ilbm)
         {
             if (ilbm.Bmhd == null)
@@ -51,24 +50,10 @@ namespace IlbmReaderTest
                         InterleavedBitmapData[targetPos++] = innerIlbmChunk.Content[pos++];
                     }
                     writtenBytes += n + 1;
-
                 }
-            }
-            //Width = ContentReader.ReadUShort(innerIlbmChunk.Content, 0);
-            //Height = ContentReader.ReadUShort(innerIlbmChunk.Content, 2);
-            //X = ContentReader.ReadShort(innerIlbmChunk.Content, 4);
-            //Y = ContentReader.ReadShort(innerIlbmChunk.Content, 6);
-            //NumberOfPlanes = ContentReader.ReadUByte(innerIlbmChunk.Content, 8);
-            //Masking = ContentReader.ReadUByte(innerIlbmChunk.Content, 9);
-            //Compression = ContentReader.ReadUByte(innerIlbmChunk.Content, 10);
-            //// UBYTE pad1
-            //TransparentColorNumber = ContentReader.ReadUShort(innerIlbmChunk.Content, 12);
-            //XAspect = ContentReader.ReadUByte(innerIlbmChunk.Content, 14);
-            //YAspect = ContentReader.ReadUByte(innerIlbmChunk.Content, 15);
-            //PageWidth = ContentReader.ReadShort(innerIlbmChunk.Content, 16);
-            //PageHeight = ContentReader.ReadShort(innerIlbmChunk.Content, 18);
+            }            
         }
-
+        
         public byte[] InterleavedBitmapData { get; }
         public byte ActualNumberOfPlanes { get; }
         public long BytesPerRowPerPlane { get; }

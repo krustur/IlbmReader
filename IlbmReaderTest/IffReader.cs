@@ -34,40 +34,43 @@ namespace IlbmReaderTest
             }
 
 
-            var ilbm = iffFile.Ilbms.FirstOrDefault();
-            if (ilbm != null && ilbm.Bmhd != null && ilbm.Body != null)
+            foreach (var ilbm in iffFile.Ilbms)
             {
-                var width = ilbm.Bmhd.Width;
-                var height = ilbm.Bmhd.Height;
-                var numberOfPlanes = ilbm.Bmhd.NumberOfPlanes;
-
-                var bytesPerRowPerPlane = ilbm.Body.BytesPerRowPerPlane;
-                var bytesPerRowAllPlanes = ilbm.Body.BytesPerRowAllPlanes;
-
-                var bitmap = new Bitmap(width, height);
-
-                for (var pixelX = 0; pixelX < width; pixelX++)
+                //var ilbm = iffFile.Ilbms.FirstOrDefault();
+                if (ilbm != null && ilbm.Bmhd != null && ilbm.Body != null)
                 {
-                    var xoffset = pixelX / 8;
-                    var xbit = (~pixelX) & 0x00000007;
-                    var bitMask = 0x01 << xbit;
+                    var width = ilbm.Bmhd.Width;
+                    var height = ilbm.Bmhd.Height;
+                    var numberOfPlanes = ilbm.Bmhd.NumberOfPlanes;
 
-                    for (var pixelY = 0; pixelY < height; pixelY++)
+                    var bytesPerRowPerPlane = ilbm.Body.BytesPerRowPerPlane;
+                    var bytesPerRowAllPlanes = ilbm.Body.BytesPerRowAllPlanes;
+
+                    var bitmap = new Bitmap(width, height);
+
+                    for (var pixelX = 0; pixelX < width; pixelX++)
                     {
-                        var yoffset = pixelY * bytesPerRowAllPlanes;
-                        int clutIndex = 0;
-                        for (int plane = 0; plane < numberOfPlanes; plane++)
-                        {
-                            var planeByte = ilbm.Body.InterleavedBitmapData[yoffset + xoffset + plane * bytesPerRowPerPlane];
-                            var planeValue = ((planeByte & bitMask) >> xbit) << plane;
-                            clutIndex = clutIndex + planeValue;
+                        var xoffset = pixelX / 8;
+                        var xbit = (~pixelX) & 0x00000007;
+                        var bitMask = 0x01 << xbit;
 
+                        for (var pixelY = 0; pixelY < height; pixelY++)
+                        {
+                            var yoffset = pixelY * bytesPerRowAllPlanes;
+                            int clutIndex = 0;
+                            for (int plane = 0; plane < numberOfPlanes; plane++)
+                            {
+                                var planeByte = ilbm.Body.InterleavedBitmapData[yoffset + xoffset + plane * bytesPerRowPerPlane];
+                                var planeValue = ((planeByte & bitMask) >> xbit) << plane;
+                                clutIndex = clutIndex + planeValue;
+
+                            }
+                            var pixelCol = ilbm.Cmap.Colors[clutIndex];
+                            bitmap.SetPixel(pixelX, pixelY, pixelCol);
                         }
-                        var pixelCol = ilbm.Cmap.Colors[clutIndex];
-                        bitmap.SetPixel(pixelX, pixelY, pixelCol);
                     }
+                    ilbm.Bitmap = bitmap;
                 }
-                ilbm.Bitmap = bitmap;
             }
 
 
@@ -94,7 +97,7 @@ namespace IlbmReaderTest
                         var innerIlbmChunk = ilbmIterator.GetNextChunk();
                         iffFile.AllChunks.Add(innerIlbmChunk);
 
-                        HandleInnerIlbmChunk(innerIlbmChunk, ilbm);
+                        HandleInnerIlbmChunk(innerIlbmChunk, iffFile, ilbm);
                     }
 
                     iffFile.Ilbms.Add(ilbm);
@@ -124,7 +127,7 @@ namespace IlbmReaderTest
         }
 
 
-        private void HandleInnerIlbmChunk(IffChunk innerIlbmChunk, Ilbm ilbm)
+        private void HandleInnerIlbmChunk(IffChunk innerIlbmChunk, IffFile iffFile, Ilbm ilbm)
         {
             switch (innerIlbmChunk.TypeId)
             {
@@ -143,6 +146,13 @@ namespace IlbmReaderTest
                 case "BODY":
                     ilbm.Body = new Body(innerIlbmChunk, ilbm);
                     break;
+                case "ANHD":
+                    ilbm.Anhd = new Anhd(innerIlbmChunk);
+                    break;
+                case "DLTA":
+                    ilbm.Dlta = new Dlta(innerIlbmChunk, ilbm, iffFile);
+                    break;
+
                 case "DPPS":
                     //todo: Handle DPPS
                     _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
@@ -184,12 +194,7 @@ namespace IlbmReaderTest
                     // https://en.m.wikipedia.org/wiki/ILBM
                     _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;
-                case "ANHD":                    
-                    ilbm.Anhd = new Anhd(innerIlbmChunk);
-                    break;
-                case "DLTA":
-                    // Anim delta
-                    break;
+                
                 default:
                     _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
                     break;

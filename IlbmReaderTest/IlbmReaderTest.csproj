@@ -75,6 +75,7 @@
     <Compile Include="Camg.cs" />
     <Compile Include="Cmap.cs" />
     <Compile Include="ContentReader.cs" />
+    <Compile Include="Dlta.cs" />
     <Compile Include="IffChunk.cs" />
     <Compile Include="IffChunkParser.cs" />
     <Compile Include="IffFile.cs" />
