@@ -8,19 +8,11 @@ namespace IlbmReaderTest
         {
             var deltaFrom = iffFile.Ilbms.Last();
             var bmhd = iffFile.GetBmhd();
-            var body = iffFile.GetBody();
-            
-            //var pos = 0;
-            //var targetPos = 0;
-            //var writtenBytes = 0;
-            //var actualNumberOfPlanes = deltaFrom.Body.ActualNumberOfPlanes;
-            //var bytesPerRowPerPlane = deltaFrom.Body.BytesPerRowPerPlane;
-            //var bytesPerRowAllPlanes = deltaFrom.Body.BytesPerRowAllPlanes;
-            //var targetSize = bytesPerRowAllPlanes * deltaFrom.Bmhd.Height;
+            var body = iffFile.GetBody();            
 
             InterleavedBitmapData = deltaFrom.Body != null ? 
                 deltaFrom.Body.InterleavedBitmapData.ToArray() :
-                deltaFrom.Dlta.InterleavedBitmapData.ToArray();// new byte[targetSize];
+                deltaFrom.Dlta.InterleavedBitmapData.ToArray();
 
             switch (delta.Anhd.Operation)
             {
@@ -30,37 +22,7 @@ namespace IlbmReaderTest
                 case 5:
                     Operation5(ilbmChunk, body);
                     break;
-            }
-            //while (pos < innerIlbmChunk.ContentLength)
-            ////while (targetPos < targetSize)
-            //{
-            //    var n = ContentReader.ReadSByte(innerIlbmChunk.Content, pos);
-            //    pos++;
-
-            //    if (n == -128)
-            //    {
-            //        throw new Exception("No operation?!?");
-            //    }
-            //    else
-            //    if (n < 0)
-            //    {
-            //        var newn = -n;
-            //        for (int i = 0; i <= newn; i++)
-            //        {
-            //            InterleavedBitmapData[targetPos++] = innerIlbmChunk.Content[pos];
-            //        }
-            //        writtenBytes += newn + 1;
-            //        pos++;
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0; i <= n; i++)
-            //        {
-            //            InterleavedBitmapData[targetPos++] = innerIlbmChunk.Content[pos++];
-            //        }
-            //        writtenBytes += n + 1;
-            //    }
-            //}
+            }           
         }
 
         private void Operation5(IffChunk ilbmChunk, Body body)
@@ -147,42 +109,7 @@ namespace IlbmReaderTest
                         {
                             // 1. Skip ops
                             writeOffset += op * body.BytesPerRowAllPlanes;
-                        }
-                        ////dest = planeptr + *ptr++;
-                        //var destOffset = ContentReader.ReadUShort(ilbmChunk.Content, offsetListOffset);
-                        //offsetListOffset += 2;
-
-                        ////size = *ptr++;
-                        //var size = ContentReader.ReadUShort(ilbmChunk.Content, offsetListOffset);
-                        //offsetListOffset += 2;
-
-                        //if (size < 0) 
-                        //{
-                        //    for (var s = size; s < 0; s++) 
-                        //    {
-                        //        //*dest = *data;
-                        //        ushort value = ContentReader.ReadUShort(ilbmChunk.Content, dataOffset); 
-                        //        ContentWriter.WriteUShort(InterleavedBitmapData, planeOffset + destOffset, value);
-                        //        //dest += nw;
-                        //        planeOffset += nw;
-                        //    }
-                        //    //data++;
-                        //    dataOffset += 2;
-                        //}
-                        //else
-                        //{
-                        //    for (var s = 0; s < size; s++) 
-                        //    {
-                        //        //*dest = *data++;
-                        //        ushort value = ContentReader.ReadUShort(ilbmChunk.Content, dataOffset);
-                        //        ContentWriter.WriteUShort(InterleavedBitmapData, planeOffset + destOffset, value);
-                        //        dataOffset += 2;
-                        //        //dest += nw;
-                        //        planeOffset += nw;
-                        //    }
-                        //}
-
-                        ////destOffset = ContentReader.ReadUShort(ilbmChunk.Content, offsetListOffset);
+                        }                        
                     }
                 }
             }
