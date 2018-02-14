@@ -9,6 +9,9 @@ namespace IlbmReaderTest
     public partial class IlbmForm : Form
     {
         private readonly IffReader.Factory iffReaderFactory;
+        private IffFile _iff;
+        private int _frame;
+        private Timer _timer;
 
         public delegate IlbmForm Factory();
 
@@ -24,27 +27,54 @@ namespace IlbmReaderTest
         {
             var iffReader = iffReaderFactory();
 
-            var iff = iffReader.Read(IffFileName);
+            _iff = iffReader.Read(IffFileName);
+            _frame = 0;
+
+            this.Text = Path.GetFileName(IffFileName);
 
             //foreach (var xxx in iff.Ilbms)
             //{
-                
+
             //    var bitmapFile = $@"C:\temp\iffbitmaps\{Path.GetFileName(IffFileName)}_{DateTime.Now.Ticks}.bmp";
             //    xxx.Bitmap.Save(bitmapFile);
             //}
-            Ilbm ilbm;
-            if (iff.Ilbms.Count > 1)
+            UpdateImage();
+
+            if (_iff.IsAnim)
             {
-                var x = (new Random().Next() % iff.Ilbms.Count);
-                ilbm = iff.Ilbms[x];
+                _timer = new Timer()
+                {
+                    Interval = 1 * 1000 / 50,
+                };
+                _timer.Tick += AnimationTick;
+                _timer.Start();
+            }
+
+        }
+
+        private void AnimationTick(object sender, EventArgs e)
+        {
+            _frame++;
+            _frame = _frame % _iff.Ilbms.Count;
+            UpdateImage();
+        }
+
+        private void UpdateImage()
+        {
+            Ilbm ilbm;
+            /*
+            if (_iff.Ilbms.Count > 1)
+            {
+                var x = (new Random().Next() % _iff.Ilbms.Count);
+                ilbm = _iff.Ilbms[x];
             }
             else
             {
-                ilbm = iff.Ilbms.FirstOrDefault();
-                
-            }
+            */
+                ilbm = _iff.Ilbms[_frame];
 
-            var bmhd = iff.GetBmhd();
+            //}
+            var bmhd = _iff.GetBmhd();
             if (ilbm != null)
             {
                 pictureBox1.Image = ilbm.Bitmap;
