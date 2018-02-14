@@ -106,6 +106,11 @@ namespace IlbmReaderTest
                 var planeOffset = plane * body.BytesPerRowPerPlane;
                 
                 var dataOffset = ContentReader.ReadUInt(ilbmChunk.Content, plane * 4);
+                if (dataOffset == 0)
+                {
+                    // Undocumented, seem to work though!
+                    continue;
+                }
 
                 for (var column = 0; column < body.BytesPerRowPerPlane; column++)
                 {
