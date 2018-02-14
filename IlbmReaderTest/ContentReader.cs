@@ -10,19 +10,19 @@ namespace IlbmReaderTest
             return Encoding.UTF8.GetString(content, offset, length);
         }
 
-        internal static sbyte ReadSByte(byte[] content, int offset)
+        public static sbyte ReadSByte(byte[] content, int offset)
         {
             var result = (sbyte)content[offset + 0];
             return result;
         }
 
-        internal static byte ReadUByte(byte[] content, int offset)
+        public static byte ReadUByte(byte[] content, int offset)
         {
             var result = content[offset + 0];
             return result;
         }
 
-        internal static short ReadShort(byte[] content, int offset)
+        public static short ReadShort(byte[] content, int offset)
         {
             var result = (short)(
                 (content[offset + 0]) * 0x0100 +
@@ -31,7 +31,16 @@ namespace IlbmReaderTest
             return result;
         }
 
-        internal static ushort ReadUShort(byte[] content, int offset)
+        public static ushort ReadUShort(byte[] content, int offset)
+        {
+            var result = (ushort)(
+                (content[offset + 0]) * 0x0100 +
+                (content[offset + 1]) * 0x0001
+                );
+            return result;
+        }
+
+        public static ushort ReadUShort(byte[] content, uint offset)
         {
             var result = (ushort)(
                 (content[offset + 0]) * 0x0100 +
@@ -58,6 +67,18 @@ namespace IlbmReaderTest
                 ((uint)content[offset + 2]) * 0x00000100 +
                 ((uint)content[offset + 3]) * 0x00000001;
             return result;
+        }
+    }
+
+    public class ContentWriter
+    {
+        public static void WriteUShort(byte[] content, long offset, ushort value)
+        {
+            var byte2 = (byte)(value >> 8);
+            var byte1 = (byte)(value & 0xff);
+
+            content[offset + 0] = byte2;
+            content[offset + 1] = byte1;
         }
     }
 }

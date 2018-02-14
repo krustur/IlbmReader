@@ -27,6 +27,27 @@
         public uint Abstime { get; }
         public uint Reltime { get; }
         public byte Interleave { get; }
-        public uint Bits { get; }        
+        public uint Bits { get; }
+
+        // Operation
+        // 0	           set directly(normal ILBM BODY)
+        // 1	           XOR ILBM mode
+        // 2	           Long Delta mode
+        // 3	           Short Delta mode
+        // 4	           Generalized short/long Delta mode
+        // 5	           Byte Vertical Delta mode
+        // 6	           Stereo op 5 (third party)
+        // 7	           short/long Vertical Delta mode
+        // 74 (ASCII 'J')  reserved for Eric Graham's compression technique (details to be released later).
+
+        // bits
+        // bit # set =0	                       set =1
+        // 0     short data                    long data
+        // 1     set                           XOR
+        // 2     separate info for each plane  one info list for all planes
+        // 3     not RLC                       RLC(run length coded)
+        // 4     horizontal                    vertical
+        // 5     short info offsets            long info offsets
+
     }
 }
