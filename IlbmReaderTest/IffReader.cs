@@ -34,17 +34,20 @@ namespace IlbmReaderTest
             }
 
 
+            var bmhd = iffFile.GetBmhd();
+            var body = iffFile.GetBody();
+            var cmap = iffFile.GetCmap();
             foreach (var ilbm in iffFile.Ilbms)
             {
                 //var ilbm = iffFile.Ilbms.FirstOrDefault();
-                if (ilbm != null && ilbm.Bmhd != null && ilbm.Body != null)
+                var interleavedBitmapData = ilbm.Body != null ? ilbm.Body.InterleavedBitmapData : ilbm.Dlta.InterleavedBitmapData;
                 {
-                    var width = ilbm.Bmhd.Width;
-                    var height = ilbm.Bmhd.Height;
-                    var numberOfPlanes = ilbm.Bmhd.NumberOfPlanes;
+                    var width = bmhd.Width;
+                    var height = bmhd.Height;
+                    var numberOfPlanes = bmhd.NumberOfPlanes;
 
-                    var bytesPerRowPerPlane = ilbm.Body.BytesPerRowPerPlane;
-                    var bytesPerRowAllPlanes = ilbm.Body.BytesPerRowAllPlanes;
+                    var bytesPerRowPerPlane = body.BytesPerRowPerPlane;
+                    var bytesPerRowAllPlanes = body.BytesPerRowAllPlanes;
 
                     var bitmap = new Bitmap(width, height);
 
@@ -60,12 +63,12 @@ namespace IlbmReaderTest
                             int clutIndex = 0;
                             for (int plane = 0; plane < numberOfPlanes; plane++)
                             {
-                                var planeByte = ilbm.Body.InterleavedBitmapData[yoffset + xoffset + plane * bytesPerRowPerPlane];
+                                var planeByte = interleavedBitmapData[yoffset + xoffset + plane * bytesPerRowPerPlane];
                                 var planeValue = ((planeByte & bitMask) >> xbit) << plane;
                                 clutIndex = clutIndex + planeValue;
 
                             }
-                            var pixelCol = ilbm.Cmap.Colors[clutIndex];
+                            var pixelCol = cmap.Colors[clutIndex];
                             bitmap.SetPixel(pixelX, pixelY, pixelCol);
                         }
                     }

@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using Autofac;
 using System.Linq;
+using System.IO;
 
 namespace IlbmReaderTest
 {
@@ -25,6 +26,12 @@ namespace IlbmReaderTest
 
             var iff = iffReader.Read(IffFileName);
 
+            //foreach (var xxx in iff.Ilbms)
+            //{
+                
+            //    var bitmapFile = $@"C:\temp\iffbitmaps\{Path.GetFileName(IffFileName)}_{DateTime.Now.Ticks}.bmp";
+            //    xxx.Bitmap.Save(bitmapFile);
+            //}
             Ilbm ilbm;
             if (iff.Ilbms.Count > 1)
             {
@@ -37,12 +44,13 @@ namespace IlbmReaderTest
                 
             }
 
-            if (ilbm != null && ilbm.Bmhd != null)
+            var bmhd = iff.GetBmhd();
+            if (ilbm != null)
             {
                 pictureBox1.Image = ilbm.Bitmap;
                 pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-                Width = pictureBox1.Width = ilbm.Bmhd.Width;
-                Height = pictureBox1.Height = ilbm.Bmhd.Height;
+                Width = pictureBox1.Width = bmhd.Width;
+                Height = pictureBox1.Height = bmhd.Height;
             }
         }
     }

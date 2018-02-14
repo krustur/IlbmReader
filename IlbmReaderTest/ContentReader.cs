@@ -16,7 +16,19 @@ namespace IlbmReaderTest
             return result;
         }
 
+        public static sbyte ReadSByte(byte[] content, uint offset)
+        {
+            var result = (sbyte)content[offset + 0];
+            return result;
+        }
+
         public static byte ReadUByte(byte[] content, int offset)
+        {
+            var result = content[offset + 0];
+            return result;
+        }
+
+        public static byte ReadUByte(byte[] content, uint offset)
         {
             var result = content[offset + 0];
             return result;
@@ -72,6 +84,12 @@ namespace IlbmReaderTest
 
     public class ContentWriter
     {
+        public static void WriteUByte(byte[] content, long offset, byte value)
+        {           
+            if (offset < content.Length)
+            content[offset] = value;
+        }
+
         public static void WriteUShort(byte[] content, long offset, ushort value)
         {
             var byte2 = (byte)(value >> 8);
