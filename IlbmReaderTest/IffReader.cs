@@ -29,10 +29,9 @@ namespace IlbmReaderTest
 
             while (topLevelIterator.EndOfChunk() == false)
             {
-                var topLevelChunk2 = topLevelIterator.GetNextChunk();
-                HandleFormChunk(topLevelChunk2, iffFile); // Assume top level chunks are form's for now
+                var topLevelChunk = topLevelIterator.GetNextChunk();
+                HandleChunk(topLevelChunk, iffFile); // Assume top level chunks are form's for now
             }
-
 
             var bmhd = iffFile.GetBmhd();
             var body = iffFile.GetBody();
@@ -80,45 +79,114 @@ namespace IlbmReaderTest
             return iffFile;
         }
 
-        private void HandleFormChunk(IffChunk formChunk, IffFile iffFile)
+        private void HandleChunk(IffChunk chunk, IffFile iffFile, Ilbm ilbm = null)
         {
-            if (formChunk.TypeId != "FORM")
+            switch (chunk.TypeId)
             {
-                _logger.Error($"Not a FORM type [{formChunk.TypeId}]");
-                return;
-            }
+                case "FORM":
+                    var formType = ContentReader.ReadString(chunk.Content, 0, 4);
 
-            var formType = ContentReader.ReadString(formChunk.Content, 0, 4);
-
-            switch (formType)
-            {
-                case "ILBM":
-                    var ilbm = new Ilbm();
-                    var ilbmIterator = new IffChunkIterator(formChunk.Content, 4);
-                    while (ilbmIterator.EndOfChunk() == false)
+                    switch (formType)
                     {
-                        var innerIlbmChunk = ilbmIterator.GetNextChunk();
-                        iffFile.AllChunks.Add(innerIlbmChunk);
+                        case "ILBM":
+                            ilbm = new Ilbm();
+                            var ilbmIterator = new IffChunkIterator(chunk.Content, 4);
+                            while (ilbmIterator.EndOfChunk() == false)
+                            {
+                                var innerIlbmChunk = ilbmIterator.GetNextChunk();
+                                iffFile.AllChunks.Add(innerIlbmChunk);
 
-                        HandleInnerIlbmChunk(innerIlbmChunk, iffFile, ilbm);
+                                HandleChunk(innerIlbmChunk, iffFile, ilbm);
+                            }
+
+                            iffFile.Ilbms.Add(ilbm);
+                            break;
+                        case "ANIM":
+                            iffFile.IsAnim = true;
+                            var animIterator = new IffChunkIterator(chunk.Content, 4);
+                            while (animIterator.EndOfChunk() == false)
+                            {
+                                var innerIlbmChunk = animIterator.GetNextChunk();
+                                iffFile.AllChunks.Add(innerIlbmChunk);
+
+                                HandleChunk(innerIlbmChunk, iffFile);
+                            }
+                            break;
+                        default:
+                            _logger.Information($"Unsupported FORM type [{formType}]");
+                            break;
                     }
 
-                    iffFile.Ilbms.Add(ilbm);
                     break;
-                case "ANIM":
-                    iffFile.IsAnim = true;
-                    var animIterator = new IffChunkIterator(formChunk.Content, 4);
-                    while (animIterator.EndOfChunk() == false)
-                    {
-                        var innerIlbmChunk = animIterator.GetNextChunk();
-                        iffFile.AllChunks.Add(innerIlbmChunk);
 
-                        HandleFormChunk(innerIlbmChunk, iffFile);
-                    }
+                case "ANNO":
+                    ilbm.Anno = Encoding.UTF8.GetString(chunk.Content, 0, (int)chunk.ContentLength);
                     break;
+                case "BMHD":
+                    ilbm.Bmhd = new Bmhd(chunk);
+                    break;
+                case "CMAP":
+                    ilbm.Cmap = new Cmap(chunk, ilbm);
+                    break;
+                case "CAMG":
+                    ilbm.Camg = new Camg(chunk);
+                    break;
+                case "BODY":
+                    ilbm.Body = new Body(chunk, ilbm);
+                    break;
+                case "ANHD":
+                    ilbm.Anhd = new Anhd(chunk);
+                    break;
+                case "DLTA":
+                    ilbm.Dlta = new Dlta(chunk, ilbm, iffFile);
+                    break;
+
+                case "DPPS":
+                    //todo: Handle DPPS
+                    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
+                    break;
+                //case "FORM":
+                //    //todo: Handle inner FORMs
+                //    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
+                //    break;
+                case "DRNG":
+                    //DPaint IV enhanced color cycle chunk (EA)
+                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
+                    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
+                    break;
+                case "BRNG":
+                    //unknown
+                    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
+                    break;
+                case "CRNG":
+                    // color register range
+                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
+                    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
+                    break;
+                case "DPI ":
+                    // Dots per inch chunk
+                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
+                    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
+                    break;
+                case "GRAB":
+                    // locates a “handle” or “hotspot”
+                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
+                    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
+                    break;
+                case "DPXT":
+                    // unknown
+                    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
+                    break;
+                case "TINY":
+                    // Thumbnail
+                    // https://en.m.wikipedia.org/wiki/ILBM
+                    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
+                    break;
+
                 default:
-                    _logger.Information($"Unsupported FORM type [{formType}]");
+                    _logger.Information($"Unsupported ILBM inner chunk [{chunk.TypeId}]");
                     break;
+                    //throw new Exception($"Unknown inner Ilbm chunk type id [{innerIlbmChunk.TypeId}]");
             }
         }
 
@@ -127,83 +195,6 @@ namespace IlbmReaderTest
             var fileContent = File.ReadAllBytes(fileName);
             var iffChunk = new IffChunk(fileContent, 0);
             return iffChunk;
-        }
-
-
-        private void HandleInnerIlbmChunk(IffChunk innerIlbmChunk, IffFile iffFile, Ilbm ilbm)
-        {
-            switch (innerIlbmChunk.TypeId)
-            {
-                case "ANNO":
-                    ilbm.Anno = Encoding.UTF8.GetString(innerIlbmChunk.Content, 0, (int)innerIlbmChunk.ContentLength);
-                    break;
-                case "BMHD":
-                    ilbm.Bmhd = new Bmhd(innerIlbmChunk);
-                    break;
-                case "CMAP":
-                    ilbm.Cmap = new Cmap(innerIlbmChunk, ilbm);
-                    break;
-                case "CAMG":
-                    ilbm.Camg = new Camg(innerIlbmChunk);
-                    break;
-                case "BODY":
-                    ilbm.Body = new Body(innerIlbmChunk, ilbm);
-                    break;
-                case "ANHD":
-                    ilbm.Anhd = new Anhd(innerIlbmChunk);
-                    break;
-                case "DLTA":
-                    ilbm.Dlta = new Dlta(innerIlbmChunk, ilbm, iffFile);
-                    break;
-
-                case "DPPS":
-                    //todo: Handle DPPS
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                case "FORM":
-                    //todo: Handle inner FORMs
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                case "DRNG":
-                    //DPaint IV enhanced color cycle chunk (EA)
-                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                case "BRNG":
-                    //unknown
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                case "CRNG":
-                    // color register range
-                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                case "DPI ":
-                    // Dots per inch chunk
-                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                case "GRAB":
-                    // locates a “handle” or “hotspot”
-                    // http://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                case "DPXT":
-                    // unknown
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                case "TINY":
-                    // Thumbnail
-                    // https://en.m.wikipedia.org/wiki/ILBM
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                
-                default:
-                    _logger.Information($"Unsupported ILBM inner chunk [{innerIlbmChunk.TypeId}]");
-                    break;
-                    //throw new Exception($"Unknown inner Ilbm chunk type id [{innerIlbmChunk.TypeId}]");
-            }
-
         }
     }
 }
