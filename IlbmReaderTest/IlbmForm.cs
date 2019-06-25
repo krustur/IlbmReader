@@ -30,7 +30,15 @@ namespace IlbmReaderTest
             _iff = iffReader.Read(IffFileName);
             _frame = 0;
 
-            this.Text = Path.GetFileName(IffFileName);
+            this.Text = string.Format("{0}{1} [{2}x{3}x{4}] [{5}x{6}]",
+                _iff.IsAnim ? "Anim-" : "", 
+                Path.GetFileName(IffFileName),
+                _iff?.GetBmhd()?.PageWidth,
+                _iff?.GetBmhd()?.PageHeight,
+                _iff?.GetBmhd()?.NumberOfPlanes,
+                _iff?.GetBmhd()?.Width,
+                _iff?.GetBmhd()?.Height
+            );
 
             //foreach (var xxx in iff.Ilbms)
             //{

@@ -75,13 +75,20 @@ namespace IlbmReaderTest
 
         private void LoadIlbm(string fileName)
         {
-            var form = _ilbmFormFactory();
+            try
+            {
+                var form = _ilbmFormFactory();
 
-            form.IffFileName = fileName;
-            form.MdiParent = this.MdiClientPanel.MdiForm;
-            form.ShowInTaskbar = false;
-            
-            form.Show();
+                form.IffFileName = fileName;
+                form.MdiParent = this.MdiClientPanel.MdiForm;
+                form.ShowInTaskbar = false;
+
+                form.Show();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
         }       
     }
 }

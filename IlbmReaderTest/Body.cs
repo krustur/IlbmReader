@@ -27,7 +27,7 @@ namespace IlbmReaderTest
             {
                 var n = ContentReader.ReadSByte(innerIlbmChunk.Content, pos);
                 pos++;
-                
+
                 if (n == -128)
                 {
                     throw new Exception("No operation?!?");
