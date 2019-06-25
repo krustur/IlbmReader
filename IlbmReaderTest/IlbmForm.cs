@@ -48,11 +48,11 @@ namespace IlbmReaderTest
             //}
             UpdateImage();
 
-            if (_iff.IsAnim)
+            if (_iff.IsAnim || _iff.Ilbms.Count > 1)
             {
                 _timer = new Timer()
                 {
-                    Interval = 1 * 1000 / 50,
+                    Interval = _iff.IsAnim ? 1 * 1000 / 50 : 1000,
                 };
                 _timer.Tick += AnimationTick;
                 _timer.Start();

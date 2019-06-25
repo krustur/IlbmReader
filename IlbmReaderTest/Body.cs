@@ -20,7 +20,7 @@ namespace IlbmReaderTest
             BytesPerRowPerPlane = ((ilbm.Bmhd.Width + 15) & 0xfffffff0) / 8;
             BytesPerRowAllPlanes = BytesPerRowPerPlane * ActualNumberOfPlanes;
             var targetSize = BytesPerRowAllPlanes * ilbm.Bmhd.Height;
-            InterleavedBitmapData = new byte[targetSize];
+            BitmapData = new byte[targetSize];
 
             switch (ilbm.Bmhd.Compression)
             {
@@ -28,12 +28,12 @@ namespace IlbmReaderTest
                 {
                     if (targetSize != innerIlbmChunk.Content.Length)
                     {
-                        throw new Exception("Expected uncompressed data not equal to chunk content length");
+                        throw new Exception("Expected uncompressed data length not equal to chunk content length");
                     }
 
                     for (int i = 0; i < targetSize; i++)
                     {
-                        InterleavedBitmapData[i] = innerIlbmChunk.Content[i];
+                        BitmapData[i] = innerIlbmChunk.Content[i];
                     }
 
                     break;
@@ -67,7 +67,7 @@ namespace IlbmReaderTest
                             var newn = -n;
                             for (int i = 0; i <= newn; i++)
                             {
-                                InterleavedBitmapData[targetPos++] = innerIlbmChunk.Content[pos];
+                                BitmapData[targetPos++] = innerIlbmChunk.Content[pos];
                             }
 
                             writtenBytes += newn + 1;
@@ -82,7 +82,7 @@ namespace IlbmReaderTest
                                 {
                                     return;
                                 }
-                                InterleavedBitmapData[targetPos++] = innerIlbmChunk.Content[pos++];
+                                BitmapData[targetPos++] = innerIlbmChunk.Content[pos++];
                             }
 
                             writtenBytes += n + 1;
@@ -96,7 +96,7 @@ namespace IlbmReaderTest
             }
         }
         
-        public byte[] InterleavedBitmapData { get; }
+        public byte[] BitmapData { get; }
         public byte ActualNumberOfPlanes { get; }
         public long BytesPerRowPerPlane { get; }
         public long BytesPerRowAllPlanes { get; }

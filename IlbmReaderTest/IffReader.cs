@@ -33,13 +33,16 @@ namespace IlbmReaderTest
                 HandleChunk(topLevelChunk, iffFile); // Assume top level chunks are form's for now
             }
 
-            var bmhd = iffFile.GetBmhd();
-            var body = iffFile.GetBody();
-            var cmap = iffFile.GetCmap();
+            //var bmhd = iffFile.GetBmhd();
+            //var body = iffFile.GetBody();
+            //var cmap = iffFile.GetCmap();
             foreach (var ilbm in iffFile.Ilbms)
             {
+                var bmhd = ilbm.Bmhd != null ? ilbm.Bmhd : iffFile.GetBmhd();
+                var body = ilbm.Body != null ? ilbm.Body : iffFile.GetBody();
+                var cmap = ilbm.Cmap != null ? ilbm.Cmap : iffFile.GetCmap();
                 //var ilbm = iffFile.Ilbms.FirstOrDefault();
-                var interleavedBitmapData = ilbm.Body != null ? ilbm.Body.InterleavedBitmapData : ilbm.Dlta.InterleavedBitmapData;
+                var bitmapData = ilbm.Body != null ? ilbm.Body.BitmapData : ilbm.Dlta.BitmapData;
                 {
                     var width = bmhd.Width;
                     var height = bmhd.Height;
@@ -58,14 +61,21 @@ namespace IlbmReaderTest
 
                         for (var pixelY = 0; pixelY < height; pixelY++)
                         {
-                            var yoffset = pixelY * bytesPerRowAllPlanes;
-                            int clutIndex = 0;
-                            for (int plane = 0; plane < numberOfPlanes; plane++)
+                            int clutIndex;
+                            if (ilbm.IsPbm)
                             {
-                                var planeByte = interleavedBitmapData[yoffset + xoffset + plane * bytesPerRowPerPlane];
-                                var planeValue = ((planeByte & bitMask) >> xbit) << plane;
-                                clutIndex = clutIndex + planeValue;
-
+                                clutIndex = bitmapData[pixelY * width + pixelX];
+                            }
+                            else
+                            {
+                                clutIndex = 0;
+                                var yoffset = pixelY * bytesPerRowAllPlanes;
+                                for (int plane = 0; plane < numberOfPlanes; plane++)
+                                {
+                                    var planeByte = bitmapData[yoffset + xoffset + plane * bytesPerRowPerPlane];
+                                    var planeValue = ((planeByte & bitMask) >> xbit) << plane;
+                                    clutIndex = clutIndex + planeValue;
+                                }
                             }
 
                             //if (bmhd.NumberOfPlanes == 24 && clutIndex > 0) { }
@@ -103,7 +113,10 @@ namespace IlbmReaderTest
                     {
                         case "ILBM":
                         case "PBM ":
-                            ilbm = new Ilbm();
+                            ilbm = new Ilbm
+                            {
+                                IsPbm = formType == "PBM "
+                            };
                             var ilbmIterator = new IffChunkIterator(chunk.Content, 4);
                             while (ilbmIterator.EndOfChunk() == false)
                             {

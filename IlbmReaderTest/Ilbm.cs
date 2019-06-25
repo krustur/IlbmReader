@@ -12,5 +12,6 @@ namespace IlbmReaderTest
         public Camg Camg { get; internal set; }
         public Anhd Anhd { get; internal set; }
         public Dlta Dlta { get; internal set; }
+        public bool IsPbm { get; internal set; }
     }
 }

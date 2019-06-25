@@ -56,7 +56,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this.label3);
             this.splitContainer1.Size = new System.Drawing.Size(695, 461);
-            this.splitContainer1.SplitterDistance = 189;
+            this.splitContainer1.SplitterDistance = 54;
             this.splitContainer1.TabIndex = 2;
             // 
             // panel1
@@ -69,14 +69,14 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(183, 455);
+            this.panel1.Size = new System.Drawing.Size(48, 455);
             this.panel1.TabIndex = 0;
             // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(143, 431);
+            this.label2.Location = new System.Drawing.Point(8, 431);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 1;
@@ -95,7 +95,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(455, 435);
+            this.label4.Location = new System.Drawing.Point(590, 435);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(35, 13);
             this.label4.TabIndex = 1;

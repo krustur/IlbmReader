@@ -10,9 +10,9 @@ namespace IlbmReaderTest
             var bmhd = iffFile.GetBmhd();
             var body = iffFile.GetBody();            
 
-            InterleavedBitmapData = deltaFrom.Body != null ? 
-                deltaFrom.Body.InterleavedBitmapData.ToArray() :
-                deltaFrom.Dlta.InterleavedBitmapData.ToArray();
+            BitmapData = deltaFrom.Body != null ? 
+                deltaFrom.Body.BitmapData.ToArray() :
+                deltaFrom.Dlta.BitmapData.ToArray();
 
             switch (delta.Anhd.Operation)
             {
@@ -89,7 +89,7 @@ namespace IlbmReaderTest
                             var repeatValue = ContentReader.ReadUByte(ilbmChunk.Content, dataOffset++);
                             for (var iRpt = 0; iRpt < repeatCount; iRpt++)
                             {
-                                ContentWriter.WriteUByte(InterleavedBitmapData, planeOffset + column + writeOffset, repeatValue);
+                                ContentWriter.WriteUByte(BitmapData, planeOffset + column + writeOffset, repeatValue);
                                 writeOffset += body.BytesPerRowAllPlanes;
                             }
 
@@ -101,7 +101,7 @@ namespace IlbmReaderTest
                             for (var iUnq = 0; iUnq < uniqueCount; iUnq++)
                             {
                                 var uniqueValue = ContentReader.ReadUByte(ilbmChunk.Content, dataOffset++);
-                                ContentWriter.WriteUByte(InterleavedBitmapData, planeOffset + column + writeOffset, uniqueValue);
+                                ContentWriter.WriteUByte(BitmapData, planeOffset + column + writeOffset, uniqueValue);
                                 writeOffset += body.BytesPerRowAllPlanes;
                             }
                         }
@@ -157,7 +157,7 @@ namespace IlbmReaderTest
                         {
                             //*dest = *data;
                             ushort value = ContentReader.ReadUShort(ilbmChunk.Content, dataOffset);
-                            ContentWriter.WriteUShort(InterleavedBitmapData, planeOffset + destOffset, value);
+                            ContentWriter.WriteUShort(BitmapData, planeOffset + destOffset, value);
                             //dest += nw;
                             planeOffset += nw;
                         }
@@ -170,7 +170,7 @@ namespace IlbmReaderTest
                         {
                             //*dest = *data++;
                             ushort value = ContentReader.ReadUShort(ilbmChunk.Content, dataOffset);
-                            ContentWriter.WriteUShort(InterleavedBitmapData, planeOffset + destOffset, value);
+                            ContentWriter.WriteUShort(BitmapData, planeOffset + destOffset, value);
                             dataOffset += 2;
                             //dest += nw;
                             planeOffset += nw;
@@ -182,6 +182,6 @@ namespace IlbmReaderTest
             }
         }
 
-        public byte[] InterleavedBitmapData { get; }
+        public byte[] BitmapData { get; }
     }
 }
