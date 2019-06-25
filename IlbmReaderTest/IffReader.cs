@@ -68,7 +68,19 @@ namespace IlbmReaderTest
 
                             }
 
-                            var pixelCol = bmhd.NumberOfPlanes == 24 ? Color.FromArgb(clutIndex) : cmap.Colors[clutIndex];
+                            //if (bmhd.NumberOfPlanes == 24 && clutIndex > 0) { }
+                            Color pixelCol;
+                            if (bmhd.NumberOfPlanes == 24)
+                            {
+                                int r = (clutIndex & 0x00ff0000) >> 16;
+                                int g = (clutIndex & 0x0000ff00) >> 8;
+                                int b = clutIndex & 0x000000ff;
+                                pixelCol = Color.FromArgb(r, g, b);
+                            }
+                            else
+                            {
+                                pixelCol = cmap.Colors[clutIndex];
+                            }
                             bitmap.SetPixel(pixelX, pixelY, pixelCol);
                         }
                     }
