@@ -75,8 +75,8 @@ namespace IlbmReaderTest
 
         private void LoadIlbm(string fileName)
         {
-            try
-            {
+            //try
+            //{
                 var form = _ilbmFormFactory();
 
                 form.IffFileName = fileName;
@@ -84,11 +84,11 @@ namespace IlbmReaderTest
                 form.ShowInTaskbar = false;
 
                 form.Show();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    MessageBox.Show(e.ToString());
+            //}
         }       
     }
 }

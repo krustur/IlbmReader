@@ -33,11 +33,11 @@ namespace IlbmReaderTest
             this.Text = string.Format("{0}{1} [{2}x{3}x{4}] [{5}x{6}]",
                 _iff.IsAnim ? "Anim-" : "", 
                 Path.GetFileName(IffFileName),
-                _iff?.GetBmhd()?.PageWidth,
-                _iff?.GetBmhd()?.PageHeight,
-                _iff?.GetBmhd()?.NumberOfPlanes,
                 _iff?.GetBmhd()?.Width,
-                _iff?.GetBmhd()?.Height
+                _iff?.GetBmhd()?.Height,
+                _iff?.GetBmhd()?.NumberOfPlanes,
+                _iff?.GetBmhd()?.PageWidth,
+                _iff?.GetBmhd()?.PageHeight
             );
 
             //foreach (var xxx in iff.Ilbms)
@@ -64,10 +64,10 @@ namespace IlbmReaderTest
         {
             _frame++;
             _frame = _frame % _iff.Ilbms.Count;
-            UpdateImage();
+            UpdateImage(resize: false);
         }
 
-        private void UpdateImage()
+        private void UpdateImage(bool resize = true)
         {
             Ilbm ilbm;
             /*
@@ -86,9 +86,11 @@ namespace IlbmReaderTest
             if (ilbm != null)
             {
                 pictureBox1.Image = ilbm.Bitmap;
-                pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-                Width = pictureBox1.Width = bmhd.Width;
-                Height = pictureBox1.Height = bmhd.Height;
+                if (resize)
+                {
+                    Width = bmhd.Width + 16;
+                    Height = bmhd.Height + 39;
+                }
             }
         }
     }

@@ -21,6 +21,16 @@ namespace IlbmReaderTest
 
         internal bool EndOfChunk()
         {
+            if (_pos + 4 <= _content.Length)
+            {
+                var fileIdDizCheck = ContentReader.ReadString(_content, _pos, 4);
+                if (fileIdDizCheck == "@BEG")
+                {
+                    // Stop reading when hitting @BEGIN_FILE_ID.DIZ
+                    return true;
+                }
+            }
+
             return (_pos >= _content.Length);
         }
 

@@ -20,7 +20,7 @@ namespace IlbmReaderTest
 
         internal Bmhd GetBmhd()
         {
-            var bmhd = Ilbms.Single(x => x.Bmhd != null).Bmhd;
+            var bmhd = Ilbms.FirstOrDefault(x => x.Bmhd != null).Bmhd;
             if (bmhd == null)
             {
                 throw new Exception("BMHD chunk not loaded error");
@@ -31,13 +31,13 @@ namespace IlbmReaderTest
 
         internal Body GetBody()
         {
-            var body = Ilbms.Single(x => x.Body != null).Body;
+            var body = Ilbms.FirstOrDefault(x => x.Body != null).Body;
             return body;
         }
 
         internal Cmap GetCmap()
         {
-            var cmap = Ilbms.Single(x => x.Cmap != null).Cmap;
+            var cmap = Ilbms.FirstOrDefault(x => x.Cmap != null)?.Cmap;
             return cmap;
         }
     }

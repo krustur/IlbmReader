@@ -67,7 +67,8 @@ namespace IlbmReaderTest
                                 clutIndex = clutIndex + planeValue;
 
                             }
-                            var pixelCol = cmap.Colors[clutIndex];
+
+                            var pixelCol = bmhd.NumberOfPlanes == 24 ? Color.FromArgb(clutIndex) : cmap.Colors[clutIndex];
                             bitmap.SetPixel(pixelX, pixelY, pixelCol);
                         }
                     }
@@ -89,6 +90,7 @@ namespace IlbmReaderTest
                     switch (formType)
                     {
                         case "ILBM":
+                        case "PBM ":
                             ilbm = new Ilbm();
                             var ilbmIterator = new IffChunkIterator(chunk.Content, 4);
                             while (ilbmIterator.EndOfChunk() == false)
